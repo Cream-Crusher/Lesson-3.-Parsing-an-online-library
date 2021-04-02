@@ -47,7 +47,7 @@ def get_response(url):
     return response
 
 
-def get_name_book(id_book):
+def get_the_necessary_elements(id_book):
     url = 'https://tululu.org/b{}/'.format(id_book)
     response = get_response(url)
     soup = BeautifulSoup(response.text, 'lxml')
@@ -58,9 +58,10 @@ def get_name_book(id_book):
     image_name = soup.find('table', class_='tabs')\
     .find('td', class_='ow_px_td').find('table').find('img')['src']
 
-    
+    comments = soup.find('table', class_='tabs')\
+    .find('div', class_='texts').find_all('span', class_='black')[0].text
 
-    return name_book, image_name
+    return name_book, image_name, comments
 
 
 def get_link_the_text_book(id_book):
@@ -77,7 +78,10 @@ if __name__ == '__main__':
     for id_book in random_numbers:
         try:        
             response = get_link_the_text_book(id_book)
-            filename, image_name = get_name_book(id_book)
+            filename, image_name, comments = get_the_necessary_elements(id_book)
             download_txt(response, filename, image_name)
+            print(filename.split('::')[0])
+            print(filename.split('::')[1])
+            print(comments)
         except:
             pass
