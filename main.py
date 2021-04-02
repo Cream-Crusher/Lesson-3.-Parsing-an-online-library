@@ -6,6 +6,17 @@ from pathvalidate import sanitize_filename
 from random import sample
 
 
+def download_image(information_obtained_on_the_website, folder = 'img/'):
+    filename = information_obtained_on_the_website['image_name']
+    url = 'https://tululu.org/{}'.format(filename)
+    response = get_response(url)
+    filename = filename.split("/")[2]
+    catalog_img = os.path.join('{}', '{}').format(folder, filename)
+
+    with open(catalog_img, 'wb') as file:
+        file.write(response.content)
+
+
 def check_for_redirect(response):
     text_error = response.history
     
@@ -13,18 +24,21 @@ def check_for_redirect(response):
         raise requests.HTTPError(response.history)
 
 
-def download_txt(response, filename, folder='books/'):
+def download_txt(response, filename, image_name, folder='books/'):
 
-    information_for_saving_text = {
+    information_obtained_on_the_website = {
         'url': response,
         'filename': sanitize_filename(filename),
-        'folder': sanitize_filename(folder)
+        'folder': sanitize_filename(folder),
+        'image_name': image_name
     }
-    directory = os.path.join('{}', '{}.txt').format(information_for_saving_text['folder']\
-    , information_for_saving_text['filename'])
+    catalog_books = os.path.join('{}', '{}.txt').format(information_obtained_on_the_website['folder']\
+    , information_obtained_on_the_website['filename'])
 
-    with open(directory, 'w') as file:
-        file.write(information_for_saving_text['url'].text)
+    with open(catalog_books, 'w') as file:
+        file.write(information_obtained_on_the_website['url'].text)
+
+    download_image(information_obtained_on_the_website)
 
 
 def get_response(url):
@@ -37,9 +51,16 @@ def get_name_book(id_book):
     url = 'https://tululu.org/b{}/'.format(id_book)
     response = get_response(url)
     soup = BeautifulSoup(response.text, 'lxml')
+
     name_book = soup.find('table', class_='tabs')\
     .find('td', class_='ow_px_td').find('h1').text
-    return name_book
+
+    image_name = soup.find('table', class_='tabs')\
+    .find('td', class_='ow_px_td').find('table').find('img')['src']
+
+    
+
+    return name_book, image_name
 
 
 def get_link_the_text_book(id_book):
@@ -52,10 +73,11 @@ def get_link_the_text_book(id_book):
 if __name__ == '__main__':
     urllib3.disable_warnings()
     random_numbers = sample(range(1, 10), 8)
+
     for id_book in random_numbers:
         try:        
             response = get_link_the_text_book(id_book)
-            filename = get_name_book(id_book)
-            download_txt(response, filename)
+            filename, image_name = get_name_book(id_book)
+            download_txt(response, filename, image_name)
         except:
             pass
