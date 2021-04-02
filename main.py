@@ -61,7 +61,10 @@ def get_the_necessary_elements(id_book):
     comments = soup.find('table', class_='tabs')\
     .find('div', class_='texts').find_all('span', class_='black')[0].text
 
-    return name_book, image_name, comments
+    genre = soup.find('table', class_='tabs')\
+    .find('span', class_='d_book').find_all('a')[0].text
+
+    return name_book, image_name, comments, genre
 
 
 def get_link_the_text_book(id_book):
@@ -78,10 +81,11 @@ if __name__ == '__main__':
     for id_book in random_numbers:
         try:        
             response = get_link_the_text_book(id_book)
-            filename, image_name, comments = get_the_necessary_elements(id_book)
+            filename, image_name, comments, genre = get_the_necessary_elements(id_book)
             download_txt(response, filename, image_name)
             print(filename.split('::')[0])
             print(filename.split('::')[1])
             print(comments)
+            print(genre)
         except:
             pass
