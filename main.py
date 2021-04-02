@@ -24,13 +24,13 @@ def check_for_redirect(response):
         raise requests.HTTPError(response.history)
 
 
-def download_txt(response, filename, image_name, folder='books/'):
+def download_txt(response, book_page_information, image_name, folder='books/'):
 
     information_obtained_on_the_website = {
         'url': response,
-        'filename': sanitize_filename(filename),
+        'filename': sanitize_filename(book_page_information['filename']),
         'folder': sanitize_filename(folder),
-        'image_name': image_name
+        'image_name': book_page_information['image_name']
     }
     catalog_books = os.path.join('{}', '{}.txt').format(information_obtained_on_the_website['folder']\
     , information_obtained_on_the_website['filename'])
@@ -47,24 +47,33 @@ def get_response(url):
     return response
 
 
-def get_the_necessary_elements(id_book):
+def parse_book_page(id_book):
+    entrance = 0
     url = 'https://tululu.org/b{}/'.format(id_book)
     response = get_response(url)
     soup = BeautifulSoup(response.text, 'lxml')
 
-    name_book = soup.find('table', class_='tabs')\
+    filename = soup.find('table', class_='tabs')\
     .find('td', class_='ow_px_td').find('h1').text
 
     image_name = soup.find('table', class_='tabs')\
     .find('td', class_='ow_px_td').find('table').find('img')['src']
 
     comments = soup.find('table', class_='tabs')\
-    .find('div', class_='texts').find_all('span', class_='black')[0].text
+    .find('div', class_='texts').find_all('span', class_='black')[entrance].text
 
     genre = soup.find('table', class_='tabs')\
-    .find('span', class_='d_book').find_all('a')[0].text
+    .find('span', class_='d_book').find_all('a')[entrance].text
 
-    return name_book, image_name, comments, genre
+    book_page_information = {
+        'filename': filename,
+        'name_book': filename.split('::')[0],
+        'author': filename.split('::')[1],
+        'image_name': image_name,
+        'comments': comments,
+        'genre': genre
+    }
+    return book_page_information
 
 
 def get_link_the_text_book(id_book):
@@ -81,11 +90,8 @@ if __name__ == '__main__':
     for id_book in random_numbers:
         try:        
             response = get_link_the_text_book(id_book)
-            filename, image_name, comments, genre = get_the_necessary_elements(id_book)
-            download_txt(response, filename, image_name)
-            print(filename.split('::')[0])
-            print(filename.split('::')[1])
-            print(comments)
-            print(genre)
+            book_page_information = parse_book_page(id_book)
+            download_txt(response, book_page_information, book_page_information)
+            print(book_page_information)
         except:
             pass
