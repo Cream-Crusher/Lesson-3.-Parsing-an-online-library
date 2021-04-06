@@ -84,14 +84,17 @@ def get_link_the_text_book(id_book):
     return response
 
 
-if __name__ == '__main__':
-    #функция?
+def get_start_id_and_end_id():
     parser = argparse.ArgumentParser(
     description='Скачивание книг\картинки с сайта')
     parser.add_argument('start_id', help='id книг от', type=int)
     parser.add_argument('end_id', help='id книг до', type=int)
     args = parser.parse_args()
-    #end функции
+    return args
+
+
+if __name__ == '__main__':
+    args = get_start_id_and_end_id()
     urllib3.disable_warnings()
     numbers = range(args.start_id, args.end_id)
 
