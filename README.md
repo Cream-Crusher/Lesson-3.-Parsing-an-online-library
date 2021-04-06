@@ -17,7 +17,7 @@ Create a folder 'books' and 'img'.
 ### Run
 
 ```
-$ python main.py numbers(args.start_id) (args.end_id)
+$ python parsing.py numbers(args.start_id) (args.end_id)
 ```
 
 example:
