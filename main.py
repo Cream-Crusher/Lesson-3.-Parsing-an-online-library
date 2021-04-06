@@ -1,9 +1,10 @@
 import requests
 import os
 import urllib3
+import argparse
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
-from random import sample
+
 
 
 def download_image(information_obtained_on_the_website, folder = 'img/'):
@@ -51,7 +52,7 @@ def parse_book_page(id_book):
     entrance = 0
     url = 'https://tululu.org/b{}/'.format(id_book)
     response = get_response(url)
-    soup = BeautifulSoup(response.text, 'lxml')
+    soup = BeautifulSoup(response.text, "html.parser")
 
     filename = soup.find('table', class_='tabs')\
     .find('td', class_='ow_px_td').find('h1').text
@@ -84,10 +85,17 @@ def get_link_the_text_book(id_book):
 
 
 if __name__ == '__main__':
+    #функция?
+    parser = argparse.ArgumentParser(
+    description='Скачивание книг\картинки с сайта')
+    parser.add_argument('start_id', help='id книг от', type=int)
+    parser.add_argument('end_id', help='id книг до', type=int)
+    args = parser.parse_args()
+    #end функции
     urllib3.disable_warnings()
-    random_numbers = sample(range(1, 10), 8)
+    numbers = range(args.start_id, args.end_id)
 
-    for id_book in random_numbers:
+    for id_book in numbers:
         try:        
             response = get_link_the_text_book(id_book)
             book_page_information = parse_book_page(id_book)
