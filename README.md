@@ -23,7 +23,7 @@ $ python main.py numbers(args.start_id) (args.end_id)
 example:
 
 ```
-$ python main.py numbers 1 10
+$ python parsing.py numbers 1 10
 ```
 
 ### You will see
