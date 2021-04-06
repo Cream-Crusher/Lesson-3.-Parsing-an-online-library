@@ -50,7 +50,7 @@ def get_response(url):
 
 def parse_book_page(id_book):
     entrance = 0
-    value_one = 0
+    value_one = 1
     url = 'https://tululu.org/b{}/'.format(id_book)
     response = get_response(url)
     soup = BeautifulSoup(response.text, "html.parser")
