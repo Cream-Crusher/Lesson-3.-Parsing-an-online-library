@@ -16,10 +16,6 @@ Create a folder 'books' and 'img'.
 
 ### Run
 
-```
-$ python parsing.py numbers(start_id) (end_id)
-```
-
 example:
 
 ```
