@@ -19,9 +19,9 @@ def download_image(information_obtained_on_the_website, folder = 'img/'):
 
 
 def check_for_redirect(response):
-    text_error = response.history
+    status_code   = response.history
 
-    if text_error:
+    if status_code  :
         raise requests.HTTPError(response.history)
 
 
