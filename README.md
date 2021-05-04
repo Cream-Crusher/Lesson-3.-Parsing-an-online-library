@@ -19,7 +19,7 @@ Create a folder 'books' and 'img'.
 example:
 
 ```
-$ python parsing.py numbers 1 10
+$ python parsing.py 1 10
 ```
 
 ### You will see
