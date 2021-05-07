@@ -7,13 +7,14 @@ from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 
 
-def download_image(book_page_information, folder = 'img/'):
+def download_image(book_page_information, folder = 'img'):
     filename = book_page_information['image_name']
     url = 'https://tululu.org/{}'.format(filename)
     response = get_response(url)
     filename = filename.split("/")[2]
     catalog_img = os.path.join('{}', '{}').format(folder, filename)
-
+    os.makedirs(folder, exist_ok=True)
+    
     with open(catalog_img, 'wb') as file:
         file.write(response.content)
 
@@ -25,10 +26,11 @@ def check_for_redirect(response):
         raise requests.HTTPError(history)
 
 
-def download_txt(response, book_page_information, folder='books/'):
+def download_txt(response, book_page_information, folder='books'):
     catalog_books = os.path.join('{}', '{}.txt').format(
     sanitize_filename(folder), sanitize_filename(book_page_information['filename']))
-
+    os.makedirs(folder, exist_ok=True)
+    
     with open(catalog_books, 'w', encoding='utf-8') as file:
         file.write(response.text)
 
@@ -69,7 +71,6 @@ def get_book_link(book_id):
     url = response.url
     response = get_response(url)
     check_for_redirect(response)
-    print(response.url)
     return response
 
 
@@ -92,8 +93,6 @@ if __name__ == '__main__':
             book_page_information = parse_book_page(book_id)
             download_txt(response, book_page_information)
             download_image(book_page_information)
-        except Exception as e:
-            print(e)
-        #except requests.HTTPError:
+        except requests.HTTPError:
             logging.error('Такого id нет на сайте')
             continue 
