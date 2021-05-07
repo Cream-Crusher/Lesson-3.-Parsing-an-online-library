@@ -12,8 +12,6 @@ Use pip to install dependencies:
 pip install -r requirements.txt
 ```
 
-Create a folder 'books' and 'img'.
-
 ### Run
 
 example:
