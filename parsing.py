@@ -49,7 +49,7 @@ def parse_book_page(book_id):
     all_comments = soup.find('table', class_='tabs').find('div', class_='texts')
     comments = None
     if all_comments:
-        comments = all_comments.find_all('span', class_='black')[0].text
+        comments = all_comments.find('span', class_='black').text
 
     genre = soup.find('table', class_='tabs').find('span', class_='d_book').find('a').text
     book_page_information = {
@@ -63,12 +63,13 @@ def parse_book_page(book_id):
     return book_page_information
 
 
-def get_link_book(book_id):
+def get_book_link(book_id):
     payload = {'id': '{}'.format(book_id)}
     response = requests.get('https://tululu.org/txt.php', params=payload, verify=False)
     url = response.url
     response = get_response(url)
     check_for_redirect(response)
+    print(response.url)
     return response
 
 
@@ -87,10 +88,12 @@ if __name__ == '__main__':
 
     for book_id in range(args.start_id, args.end_id):
         try:
-            response = get_link_book(book_id) 
+            response = get_book_link(book_id) 
             book_page_information = parse_book_page(book_id)
             download_txt(response, book_page_information)
             download_image(book_page_information)
-        except requests.HTTPError:
+        except Exception as e:
+            print(e)
+        #except requests.HTTPError:
             logging.error('Такого id нет на сайте')
             continue 
